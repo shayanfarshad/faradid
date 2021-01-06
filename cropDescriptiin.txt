@@ -1,0 +1,57 @@
+CropImg.openCropper({
+          path: response.uri,
+          width: 400,
+          height: 400,
+          cropping: true,
+          compressImageQuality: 0.5,
+          cropperCircleOverlay: true,
+        })
+          .then(image => {
+            var path = image.path;
+            var index = path.lastIndexOf('/');
+            var dotIndex = path.lastIndexOf('.');
+            var name = path.substring(index + 1, dotIndex);
+            setUserPhoto(name, path)
+              .then(res => {
+                if (res.status === 200) {
+                  this.setState({ photoLoading: false });
+                  this.props.setUserProfile(response.uri);
+                  AppAlert('ok', 'تصویر پروفایل به روزرسانی شد');
+                  CropImg.clean()
+                    .then(() => {
+                      // console.log('removed all tmp images from tmp directory');
+                    })
+                    .catch(e => {
+                      // alert(e);
+                    });
+                  setTimeout(() => {
+                    this.props.forceUpdateProfile(true)
+                    this.props.forceUpdateProfile2(true)
+                  }, 1000);
+                }
+              })
+              .catch(err => {
+                // console.log(err)
+                this.setState({ photoLoading: false });
+                if (err.response) {
+                  if (err.response.status !== 401) {
+                    AppAlert('err', 'خطا در بارگذاری تصویر');
+                  }
+                }
+              });
+          })
+          .catch(err => {
+            this.setState({ photoLoading: false });
+          });
+        // You can also display the image using data:
+        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+        // console.log(response);
+      }
+    });
+
+    formData.append('image', {
+      uri: `${path}`,
+      S
+      name: `${name}.jpg`,
+    });
+
